@@ -1,5 +1,6 @@
 import ContentContainer from "@/components/ContentContainer"
 import Header from "@/components/Header"
+import Tabs from "@/components/TabBar/Tabs"
 
 const Home = () => {
   return (
@@ -9,6 +10,8 @@ const Home = () => {
       <Header />
 
       <ContentContainer />
+
+      <Tabs />
 
     </div>
 
