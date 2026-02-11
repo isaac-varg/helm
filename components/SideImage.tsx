@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-interface SideImageProps {
+export interface SideImageProps {
   src: string;
   alt?: string;
   edge?: "gradient" | "line";
