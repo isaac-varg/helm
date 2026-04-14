@@ -1,27 +1,21 @@
-'use client'
+"use client";
+import { createElement } from "react";
 import { useTabBar, useTabBarActions } from "@/store/tabBarSlice";
+import { resolveIcon } from "@/lib/iconMap";
 import { motion } from "motion/react";
-import type { IconType } from "react-icons";
-
-export interface Tab {
-  id: string;
-  label: string;
-  icon: IconType;
-}
+import { useEditMode, useEditModeActions } from "@/store/editModeSlice";
+import { LuPencil, LuPlus } from "react-icons/lu";
+import type { TabData } from "@/lib/types";
 
 interface TabBarProps {
-  tabs: Tab[];
+  tabs: TabData[];
 }
 
 export const TabBar = ({ tabs }: TabBarProps) => {
-
-  const { activeTabId } = useTabBar()
-  const { setActiveTab } = useTabBarActions()
-
-  const onTabChange = (tabId: string) => {
-
-    setActiveTab(tabId)
-  }
+  const { activeTabId } = useTabBar();
+  const { setActiveTab } = useTabBarActions();
+  const isEditing = useEditMode((s) => s.isEditing);
+  const { openEditor } = useEditModeActions();
 
   return (
     <div className="fixed left-1/2 bottom-8 -translate-x-1/2 z-20">
@@ -33,44 +27,70 @@ export const TabBar = ({ tabs }: TabBarProps) => {
       >
         <div className="flex items-center gap-2">
           {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTabId === tab.id;
+            const isActive = activeTabId === tab.slug;
 
             return (
-              <motion.button
-                key={tab.id}
-                onClick={() => onTabChange(tab.id)}
-                className={`relative px-6 py-3 rounded-full transition-colors duration-300 ${isActive ? "text-white" : "text-white/50 hover:text-white/80"
+              <div key={tab.id} className="relative group/tab">
+                <motion.button
+                  onClick={() => setActiveTab(tab.slug)}
+                  className={`relative px-6 py-3 rounded-full transition-colors duration-300 ${
+                    isActive ? "text-white" : "text-white/50 hover:text-white/80"
                   }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeTabBg"
-                    className="absolute inset-0 bg-linear-to-r from-pink-500/30 to-purple-500/30 rounded-full"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <div className="relative flex items-center gap-2">
-                  <Icon className="w-5 h-5" />
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   {isActive && (
-                    <motion.span
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: "auto" }}
-                      exit={{ opacity: 0, width: 0 }}
-                      className="text-sm font-medium overflow-hidden whitespace-nowrap"
-                    >
-                      {tab.label}
-                    </motion.span>
+                    <motion.div
+                      layoutId="activeTabBg"
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        background: `linear-gradient(to right, ${tab.pillGradientFrom}80, ${tab.pillGradientTo}80)`,
+                      }}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
                   )}
-                </div>
-              </motion.button>
+                  <div className="relative flex items-center gap-2">
+                    {createElement(resolveIcon(tab.icon), { className: "w-5 h-5" })}
+                    {isActive && (
+                      <motion.span
+                        initial={{ opacity: 0, width: 0 }}
+                        animate={{ opacity: 1, width: "auto" }}
+                        exit={{ opacity: 0, width: 0 }}
+                        className="text-sm font-medium overflow-hidden whitespace-nowrap"
+                      >
+                        {tab.label}
+                      </motion.span>
+                    )}
+                  </div>
+                </motion.button>
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openEditor({ type: "tab", id: tab.id });
+                    }}
+                    className="absolute -top-2 -right-2 p-1 rounded-full bg-pink-500 text-white opacity-0 group-hover/tab:opacity-100 transition-opacity shadow-lg"
+                    title="Edit tab"
+                  >
+                    <LuPencil className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
             );
           })}
+          {isEditing && (
+            <button
+              type="button"
+              onClick={() => openEditor({ type: "tab", id: null })}
+              className="px-3 py-3 rounded-full border-2 border-dashed border-pink-400/50 text-pink-200 hover:bg-pink-400/10"
+              title="Add tab"
+            >
+              <LuPlus className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </motion.div>
     </div>
   );
-}
-
+};

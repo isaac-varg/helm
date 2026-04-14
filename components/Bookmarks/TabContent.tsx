@@ -1,18 +1,28 @@
-import type { ReactNode } from "react";
 import SideImage from "../SideImage";
-import type { SideImageProps } from "../SideImage";
+import BookmarkGroup from "./BookmarkGroup";
+import AddButton from "../edit/AddButton";
+import type { TabData } from "@/lib/types";
 
 interface TabContentProps {
-  image: SideImageProps;
-  children: ReactNode;
+  tab: TabData;
 }
 
-const TabContent = ({ image, children }: TabContentProps) => {
+const TabContent = ({ tab }: TabContentProps) => {
+  const edge = tab.sideImageEdge === "line" ? "line" : "gradient";
   return (
     <>
-      <SideImage {...image} />
+      <SideImage src={tab.sideImage} alt={tab.sideImageAlt} edge={edge} />
       <div className="flex-1 p-8 space-y-6 overflow-y-auto">
-        {children}
+        <div className="space-y-6">
+          {tab.sections.map((section) => (
+            <BookmarkGroup key={section.id} data={section} />
+          ))}
+          <AddButton
+            target={{ type: "section", id: null, tabId: tab.id }}
+            label="Add section"
+            className="w-full justify-center py-4"
+          />
+        </div>
       </div>
     </>
   );

@@ -1,20 +1,6 @@
-'use client'
-import { LuBriefcase, LuFlower2, LuHouse, LuSparkles } from "react-icons/lu"
-import { Fragment } from "react/jsx-runtime"
-import { Tab, TabBar } from "./TabBar"
+import { TabBar } from "./TabBar";
+import type { TabData } from "@/lib/types";
 
-const tabs: Tab[] = [
-  { id: "home", label: "Home", icon: LuHouse },
-  { id: "work", label: "Work", icon: LuBriefcase },
-  { id: "entertainment", label: "Fun", icon: LuSparkles },
-  { id: "zen", label: "Zen", icon: LuFlower2 },
-]
-const Tabs = () => {
-  return (
-    <Fragment>
-      <TabBar tabs={tabs} />
-    </Fragment>
-  )
-}
+const Tabs = ({ tabs }: { tabs: TabData[] }) => <TabBar tabs={tabs} />;
 
-export default Tabs
+export default Tabs;

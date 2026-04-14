@@ -1,27 +1,48 @@
-import type { IconType } from "react-icons";
+"use client";
+import { createElement } from "react";
 import Bookmark from "./Bookmark";
-import type { BookmarkProps } from "./Bookmark";
+import { resolveIcon } from "@/lib/iconMap";
+import { deleteSection } from "@/app/actions/dashboard";
+import EditOverlay from "../edit/EditOverlay";
+import AddButton from "../edit/AddButton";
+import type { SectionData } from "@/lib/types";
 
-export interface BookmarkGroupProps {
-  title: string;
-  icon?: IconType;
-  bookmarks: BookmarkProps[];
+interface BookmarkGroupProps {
+  data: SectionData;
 }
 
-const BookmarkGroup = ({ title, icon: Icon, bookmarks }: BookmarkGroupProps) => {
+const BookmarkGroup = ({ data }: BookmarkGroupProps) => {
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2 text-white/50">
-        {Icon && <Icon className="w-4 h-4" />}
-        <h3 className="text-xs font-semibold uppercase tracking-wider">{title}</h3>
+    <EditOverlay
+      target={{ type: "section", id: data.id, tabId: data.tabId }}
+      onDelete={() => deleteSection(data.id)}
+      label="section"
+    >
+      <div className="space-y-3 p-2">
+        <div className="flex items-center gap-2 text-white/50">
+          {createElement(resolveIcon(data.icon), { className: "w-4 h-4" })}
+          <h3 className="text-xs font-semibold uppercase tracking-wider">{data.title}</h3>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {data.links.map((link) => (
+            <EditOverlay
+              key={link.id}
+              target={{ type: "link", id: link.id, sectionId: data.id }}
+              label="link"
+            >
+              <Bookmark data={link} />
+            </EditOverlay>
+          ))}
+          <AddButton
+            target={{ type: "link", id: null, sectionId: data.id }}
+            label="Add link"
+            className="col-span-2 justify-center py-4"
+          />
+        </div>
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        {bookmarks.map((bookmark) => (
-          <Bookmark key={bookmark.href} {...bookmark} />
-        ))}
-      </div>
-    </div>
+    </EditOverlay>
   );
 };
 
 export default BookmarkGroup;
+export type { BookmarkGroupProps };

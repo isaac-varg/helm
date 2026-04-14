@@ -1,23 +1,36 @@
-import React from "react"
+import React from "react";
 
-const Background = ({ children }: { children: React.ReactNode }) => {
+interface BackgroundProps {
+  image: string;
+  overlayFrom: string;
+  overlayVia?: string | null;
+  overlayTo: string;
+  overlayOpacity: number;
+  children: React.ReactNode;
+}
+
+const Background = ({ image, overlayFrom, overlayVia, overlayTo, overlayOpacity, children }: BackgroundProps) => {
+  const stops = overlayVia
+    ? `${overlayFrom}, ${overlayVia}, ${overlayTo}`
+    : `${overlayFrom}, ${overlayTo}`;
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       <div
         className="fixed inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `url('https://w.wallhaven.cc/full/po/wallhaven-polerm.jpg')`,
-          filter: "blur(5px)",
-        }}
+        style={{ backgroundImage: `url('${image}')`, filter: "blur(5px)" }}
       >
-
-        <div className="fixed inset-0 bg-linear-to-br from-purple-900/40 via-pink-900/30 to-blue-900/40" />
+        <div
+          className="fixed inset-0"
+          style={{
+            background: `linear-gradient(to bottom right, ${stops})`,
+            opacity: overlayOpacity,
+          }}
+        />
       </div>
-
-
       {children}
     </div>
-  )
-}
+  );
+};
 
-export default Background
+export default Background;

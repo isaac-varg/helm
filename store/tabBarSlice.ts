@@ -11,7 +11,7 @@ interface TabBarActions {
 }
 
 export const useTabBar = create<TabBarState & TabBarActions>((set) => ({
-  activeTabId: '',
+  activeTabId: 'home',
 
   actions: {
     setActiveTab: (tabId: string) => set(() => ({ activeTabId: tabId })),
