@@ -1,0 +1,48 @@
+export interface DashboardData {
+  id: number;
+  title: string;
+  subtitle: string;
+  titleGradientFrom: string;
+  titleGradientVia: string | null;
+  titleGradientTo: string;
+  backgroundImage: string;
+  bgOverlayFrom: string;
+  bgOverlayVia: string | null;
+  bgOverlayTo: string;
+  bgOverlayOpacity: number;
+  tabs: TabData[];
+}
+
+export interface TabData {
+  id: number;
+  slug: string;
+  label: string;
+  icon: string;
+  order: number;
+  pillGradientFrom: string;
+  pillGradientTo: string;
+  sideImage: string;
+  sideImageAlt: string;
+  sideImageEdge: string;
+  sections: SectionData[];
+}
+
+export interface SectionData {
+  id: number;
+  tabId: number;
+  title: string;
+  icon: string;
+  order: number;
+  links: LinkData[];
+}
+
+export interface LinkData {
+  id: number;
+  sectionId: number;
+  icon: string;
+  title: string;
+  description: string | null;
+  href: string;
+  newTab: boolean;
+  order: number;
+}
